@@ -18,7 +18,7 @@ async function uploadFolder() {
         for (let file of files) {
             formData.append("files", file); // Send each file
         }
-        const response = await fetch("http://localhost:3000/upload-folder", {
+        const response = await fetch("http://localhost:3000/api/upload-folder", {
             method: "POST",
             body: formData,
         });
