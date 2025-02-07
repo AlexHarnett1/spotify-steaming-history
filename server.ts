@@ -1,27 +1,33 @@
-// typescript
-
-import express, { Request, Response } from "express";
-import path from 'path';
-import multer from 'multer';
+import express, { Request, Response, RequestHandler } from "express";
+import path from "path";
+import multer from "multer";
 
 const app = express();
 const port = 3000;
-const upload = multer({ dest: "uploads/" })
+
+//const __dirname = path.resolve();
+
+const upload = multer({ dest: path.join(__dirname, "uploads/") });
 
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.post("/upload", upload.single("file"), (req: any, res: any) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No file uploaded" });
+// Type-safe request handler for folder upload
+const uploadHandler: RequestHandler = (req, res) => {
+  const files = req.files as Express.Multer.File[]; // Type assertion for multiple files
+
+  if (!files || files.length === 0) {
+    res.status(400).json({ message: "No files uploaded" });
+    return;
   }
 
-  res.json({ message: "File uploaded successfully", filename: req.file.filename });
-});
+  res.json({ message: "Files uploaded successfully", filenames: files.map(file => file.filename) });
+};
 
+app.post("/upload-folder", upload.array("files"), uploadHandler);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
