@@ -5,10 +5,10 @@ const pgp = pgPromise();
 const db = pgp({
   host: 'localhost',
   port: 5432,
-  database: 'spotifydb'
+  database: 'spotifydb',
+  user: 'alexharnett',
+  password: 'password',
 });
-
-import { ListenInstance } from "../models/interfaces/ListenInstance";
 
 const createTable = async () => {
   try {
@@ -43,8 +43,6 @@ const createTable = async () => {
     console.log("Table listen_instances created successfully!");
   } catch (error) {
     console.error("Error creating table:", error);
-  } finally {
-    pgp.end(); // Close connection
   }
 };
 

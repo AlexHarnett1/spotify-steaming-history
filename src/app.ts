@@ -15,10 +15,10 @@ app.get("/", (req, res) => {
 
 app.listen(port, async () => {
   console.log(`Server running at http://localhost:${port}`);
-  try {
-    await db.connect();
-    console.log('connected to the database');
-  } catch (error) {
-    console.error('Database connection error', error);
-  }
+  // try {
+  //   await db.connect();
+  //   console.log('connected to the database');
+  // } catch (error) {
+  //   console.error('Database connection error', error);
+  // }
 });

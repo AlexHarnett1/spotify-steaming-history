@@ -2,7 +2,7 @@ import express, { Request, Response, RequestHandler } from "express";
 import multer from "multer";
 import fs from "fs/promises";
 import path from "path";
-//import { addListenInstances } from "../models/listenModels";
+import { addListenInstances } from "../models/listenModels";
 
 const upload = multer({ dest: path.join(__dirname, "../uploads/") });
 
@@ -23,8 +23,8 @@ export const processUploadedFolder: RequestHandler = async (req: Request, res: R
         const filePath = file.path;
         const fileContent = await fs.readFile(filePath, "utf-8");
         const jsonData = JSON.parse(fileContent);
+        await addListenInstances(jsonData);
         parsedData.push(jsonData);
-        console.log(parsedData);
       }
     }
     res.json({ message: "Files uploaded successfully", filenames: files.map(file => file.filename) });
