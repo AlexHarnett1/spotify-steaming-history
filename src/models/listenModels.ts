@@ -1,8 +1,15 @@
 import db from "../config/db"
 import { ListenInstance } from "./interfaces/ListenInstance";
 
+export async function deleteAllListenInstances() {
+  try {
+    await db.none('DELETE FROM listen_instances;')
+  } catch (error) {
+    console.error('Error deleting old instances:', error);
+  }
+}
+
 export async function addListenInstances(instances: ListenInstance[]) {
-  console.log(instances[0]);
   
   try {
     await Promise.all(instances.map(instance => addListenInstance(instance)));

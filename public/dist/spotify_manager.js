@@ -2,7 +2,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("uploadForm")?.addEventListener("submit", (event) => {
         event.preventDefault();
-        uploadFolder();
+        if (confirm("Are you sure you want to upload files? Any files you uploaded before will be deleted.")) {
+            uploadFolder();
+        }
     });
 });
 async function uploadFolder() {
@@ -14,8 +16,9 @@ async function uploadFolder() {
             alert("No files selected!");
             return;
         }
+        const filesArray = Array.from(files);
         const formData = new FormData();
-        for (let file of files) {
+        for (let file of filesArray) {
             formData.append("files", file); // Send each file
         }
         const response = await fetch("http://localhost:3000/api/upload-folder", {

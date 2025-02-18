@@ -13,12 +13,6 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
 
-app.listen(port, async () => {
+app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
-  // try {
-  //   await db.connect();
-  //   console.log('connected to the database');
-  // } catch (error) {
-  //   console.error('Database connection error', error);
-  // }
 });
