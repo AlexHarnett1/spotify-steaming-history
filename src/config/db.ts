@@ -46,6 +46,6 @@ const createTable = async () => {
   }
 };
 
-createTable();
+//createTable();
 
 export default db;

@@ -1,9 +1,11 @@
 import db from "../config/db"
 import { ListenInstance } from "./interfaces/ListenInstance";
 
+const listensTableName = "listen_instances";
+
 export async function deleteAllListenInstances() {
   try {
-    await db.none('DELETE FROM listen_instances;')
+    await db.none(`DELETE FROM ${listensTableName};`);
   } catch (error) {
     console.error('Error deleting old instances:', error);
   }
@@ -22,7 +24,7 @@ export async function addListenInstances(instances: ListenInstance[]) {
 
 async function addListenInstance(instance: ListenInstance) {
   const query = `
-    INSERT INTO listen_instances (
+    INSERT INTO ${listensTableName} (
       ts, platform, ms_played, conn_country, ip_addr, 
       master_metadata_track_name, master_metadata_album_artist_name, 
       master_metadata_album_album_name, spotify_track_uri, 
@@ -35,7 +37,7 @@ async function addListenInstance(instance: ListenInstance) {
       instance.master_metadata_track_name, instance.master_metadata_album_artist_name,
       instance.master_metadata_album_album_name, instance.spotify_track_uri,
       instance.reason_start, instance.reason_end, instance.shuffle, instance.skipped,
-      instance.offline, instance.incognito_mode
+      instance.offline, instance.incognito_mode, listensTableName
     ]);
   } catch (error) {
     console.error('Error adding listen instance:', error);
@@ -49,7 +51,7 @@ async function getTopSongs() {
   // Also need to exclude null for the podcasts
   const query = `
     SELECT SUM(ms_played) AS total_ms_played, master_metadata_track_name, spotify_track_uri
-    FROM listen_instances
+    FROM ${listensTableName}
     WHERE spotify_track_uri IS NOT NULL
     GROUP BY spotify_track_uri, master_metadata_track_name
     ORDER BY total_ms_played DESC;`
@@ -58,12 +60,12 @@ async function getTopSongs() {
 async function getTopSongsByYear(year: number) {
   const query = `
     SELECT SUM(ms_played) AS total_ms_played, master_metadata_track_name, spotify_track_uri
-    FROM listen_instances
-    WHERE spotify_track_uri IS NOT NULL AND EXTRACT(YEAR FROM ts) = $1
+    FROM ${listensTableName}
+    WHERE spotify_track_uri IS NOT NULL AND EXTRACT(YEAR FROM ts) = $2
     GROUP BY spotify_track_uri, master_metadata_track_name
     ORDER BY total_ms_played DESC;`
   try {
-    await db.any(query, year);
+    await db.any(query, [listensTableName, year]);
   } catch (error) {
     console.error('Error getting Top Songs by year', error);
   }
@@ -74,7 +76,7 @@ async function getTopSongsByYear(year: number) {
 async function getTopAlbums() {
   const query = `
     SELECT SUM(ms_played) AS total_ms_played, master_metadata_album_album_name, master_metadata_album_artist_name
-    FROM listen_instances
+    FROM ${listensTableName}
     WHERE spotify_track_uri IS NOT NULL
     GROUP BY master_metadata_album_album_name, master_metadata_album_artist_name
     ORDER BY total_ms_played DESC;
@@ -85,13 +87,13 @@ async function getTopAlbums() {
 async function getTopAlbumsByYear(year: number) {
   const query = `
     SELECT SUM(ms_played) AS total_ms_played, master_metadata_album_album_name, master_metadata_album_artist_name
-    FROM listen_instances
-    WHERE spotify_track_uri IS NOT NULL AND EXTRACT(YEAR FROM ts) = $1
+    FROM ${listensTableName}
+    WHERE spotify_track_uri IS NOT NULL AND EXTRACT(YEAR FROM ts) = $2
     GROUP BY master_metadata_album_album_name, master_metadata_album_artist_name
     ORDER BY total_ms_played DESC;
     `;
   try {
-    await db.any(query, year);
+    await db.any(query, [listensTableName, year]);
   } catch (error) {
     console.error('Error getting Top Songs by year', error);
   }
@@ -101,7 +103,7 @@ async function getTopAlbumsByYear(year: number) {
 async function getTopArtists(){
   const query = `
     SELECT SUM(ms_played) AS total_ms_played, master_metadata_album_artist_name
-    FROM listen_instances
+    FROM ${listensTableName}
     WHERE spotify_track_uri IS NOT NULL
     GROUP BY master_metadata_album_artist_name
     ORDER BY total_ms_played DESC;
@@ -111,7 +113,7 @@ async function getTopArtists(){
 async function getTopArtistsByYear() {
   const query = `
     SELECT SUM(ms_played) AS total_ms_played, master_metadata_album_artist_name
-    FROM listen_instances
+    FROM ${listensTableName}
     WHERE spotify_track_uri IS NOT NULL AND EXTRACT(YEAR FROM ts) = $1
     GROUP BY master_metadata_album_artist_name
     ORDER BY total_ms_played DESC;
@@ -121,8 +123,8 @@ async function getTopArtistsByYear() {
 async function getMostSkippedSongs() {
   const query = `
     SELECT COUNT(*) AS times_skipped, master_metadata_track_name, spotify_track_uri
-    FROM listen_instances
-    WHERE spotify_track_uri IS NOT NULL AND ms_played < 5000 AND EXTRACT(YEAR FROM ts) = 2024
+    FROM ${listensTableName}
+    WHERE spotify_track_uri IS NOT NULL AND ms_played < 5000
     GROUP BY spotify_track_uri, master_metadata_track_name
     ORDER BY times_skipped DESC;
   `;

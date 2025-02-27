@@ -33,8 +33,8 @@ export const processUploadedFolder: RequestHandler = async (req: Request, res: R
 
     await clearUploadsFolder();
 
-    res.json({ message: "Files uploaded successfully", filenames: files.map(file => file.filename) });
-
+    //res.json({ message: "Files uploaded successfully", filenames: files.map(file => file.filename) });
+    res.redirect("/home");
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Error processing files:", error);
