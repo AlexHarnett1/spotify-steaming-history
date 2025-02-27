@@ -1,3 +1,4 @@
+/*
 export interface ListenInstance {
   "ts": string;
   "platform": string;
@@ -23,3 +24,4 @@ export interface ListenInstance {
   "offline_timestamp": number | null;
   "incognito_mode": boolean;
 }
+*/

@@ -1,5 +1,5 @@
-import db from "../config/db"
-import { ListenInstance } from "./interfaces/ListenInstance";
+import db from "../config/db.js"
+//import { ListenInstance } from "./interfaces/ListenInstance.";
 
 const listensTableName = "listen_instances";
 
@@ -11,7 +11,7 @@ export async function deleteAllListenInstances() {
   }
 }
 
-export async function addListenInstances(instances: ListenInstance[]) {
+export async function addListenInstances(instances) {
   
   try {
     await Promise.all(instances.map(instance => addListenInstance(instance)));
@@ -22,7 +22,7 @@ export async function addListenInstances(instances: ListenInstance[]) {
 
 }
 
-async function addListenInstance(instance: ListenInstance) {
+async function addListenInstance(instance) {
   const query = `
     INSERT INTO ${listensTableName} (
       ts, platform, ms_played, conn_country, ip_addr, 
@@ -57,7 +57,7 @@ async function getTopSongs() {
     ORDER BY total_ms_played DESC;`
 }
 
-async function getTopSongsByYear(year: number) {
+async function getTopSongsByYear(year) {
   const query = `
     SELECT SUM(ms_played) AS total_ms_played, master_metadata_track_name, spotify_track_uri
     FROM ${listensTableName}
@@ -84,7 +84,7 @@ async function getTopAlbums() {
 }
 
 
-async function getTopAlbumsByYear(year: number) {
+async function getTopAlbumsByYear(year) {
   const query = `
     SELECT SUM(ms_played) AS total_ms_played, master_metadata_album_album_name, master_metadata_album_artist_name
     FROM ${listensTableName}

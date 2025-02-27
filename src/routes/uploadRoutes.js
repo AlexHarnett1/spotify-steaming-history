@@ -1,5 +1,5 @@
 import express from "express";
-import { uploadFolder, processUploadedFolder } from "../controllers/uploadController";
+import { uploadFolder, processUploadedFolder } from "../controllers/uploadController.js";
 
 const router = express.Router();
 

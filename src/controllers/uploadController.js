@@ -1,8 +1,14 @@
-import express, { Request, Response, RequestHandler } from "express";
+import express from "express";
 import multer from "multer";
 import fs from "fs/promises";
 import path from "path";
-import { addListenInstances, deleteAllListenInstances } from "../models/listenModels";
+import { addListenInstances, deleteAllListenInstances } from "../models/listenModels.js";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+// Workaround for __dirname in ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const uploadFolderPath = path.join(__dirname, "../uploads/");
 
@@ -10,9 +16,9 @@ const upload = multer({ dest: uploadFolderPath });
 
 export const uploadFolder = upload.array("files");
 
-export const processUploadedFolder: RequestHandler = async (req: Request, res: Response) => {
-  const files = req.files as Express.Multer.File[]; // Type assertion for multiple files
-  let parsedData: any[] = [];
+export const processUploadedFolder = async (req, res) => {
+  const files = req.files; // Type assertion for multiple files
+  let parsedData = [];
 
   if (!files || files.length === 0) {
     res.status(400).json({ message: "No files uploaded" });
@@ -35,7 +41,7 @@ export const processUploadedFolder: RequestHandler = async (req: Request, res: R
 
     //res.json({ message: "Files uploaded successfully", filenames: files.map(file => file.filename) });
     res.redirect("/home");
-  } catch (error: unknown) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error processing files:", error);
       res.status(500).json({ message: "Error processing files", error: error.message });
